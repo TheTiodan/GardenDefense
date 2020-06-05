@@ -17,6 +17,11 @@ public class MineralDisplay : MonoBehaviour
     {
         mineralText.text = minerals.ToString();
     }
+    public bool HaveEnoughMinerals(int amount)
+    {
+        return minerals >= amount;
+    }
+
     public void AddMinerals(int amount)
     {
         minerals = minerals + amount;

@@ -1,20 +1,50 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class DefenderSpawner : MonoBehaviour
 {
     Defender defender;
+    GameObject defenderParent;
+    const string DEFENDER_PARENT_NAME = "Defenders";
+
+    private void Start()
+    {
+        CreateDefenderParent();
+    }
+
+    private void CreateDefenderParent()
+    {
+        defenderParent = GameObject.Find(DEFENDER_PARENT_NAME);
+        if (!defenderParent)
+        {
+            defenderParent = new GameObject(DEFENDER_PARENT_NAME);
+        }
+    }
+
     private void OnMouseDown()
     {
         
-        SpawnDefender(GetSquareClicked());
+        AttemptToPlaceDefenderAt(GetSquareClicked());
     }
 
     public void SetSelectedDefender (Defender defenderToSelect)
     {
         defender = defenderToSelect;
     }
+
+    private void AttemptToPlaceDefenderAt(Vector2 gridPos)
+    {
+        var mineralDisplay = FindObjectOfType<MineralDisplay>();
+        int defenderCost = defender.GetMineralCost();
+        if (mineralDisplay.HaveEnoughMinerals(defenderCost))
+        {
+            SpawnDefender(gridPos);
+            mineralDisplay.SpendMinerals(defenderCost);
+        }
+    }
+
 
     private Vector2 GetSquareClicked()
     {
@@ -34,6 +64,7 @@ public class DefenderSpawner : MonoBehaviour
     private void SpawnDefender(Vector2 worldPos)
     {
         Defender newDefender = Instantiate(defender, worldPos, transform.rotation) as Defender;
+        newDefender.transform.parent = defenderParent.transform;
     }
     
 }
